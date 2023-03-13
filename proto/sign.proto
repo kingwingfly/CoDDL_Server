@@ -1,0 +1,30 @@
+syntax = "proto3";
+package sign;
+
+
+service Login {
+    rpc verify(LoginReq) returns (LoginResp) {};
+}
+
+service SignUp {
+    rpc register(SignUpReq) returns (SignUpResp) {};
+}
+
+message LoginReq {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResp {
+    bool result = 1;
+}
+
+message SignUpReq {
+    string username = 1;
+    string password = 2;
+    string email = 3;
+}
+
+message SignUpResp {
+    bool result = 1;
+}
