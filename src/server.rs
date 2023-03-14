@@ -1,7 +1,8 @@
-use coddl_tonic::sign;
+use coddl::sign;
 use sign::login_server::{Login, LoginServer};
 use sign::sign_up_server::{SignUp, SignUpServer};
 use sign::{LoginReq, LoginResp, SignUpReq, SignUpResp};
+use sqlx::postgres::PgPoolOptions;
 use tonic::{transport::Server, Request, Response, Status};
 
 struct MyLoginServer {}
@@ -30,9 +31,8 @@ impl SignUp for MySignUpServer {
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "[::1]:50051".parse()?;
+async fn server() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let addr = "0.0.0.0:8848".parse()?;
     let login_server = MyLoginServer {};
     let sign_up_server = MySignUpServer {};
     println!("Server listening on http://{addr}");
@@ -42,4 +42,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .serve(addr)
         .await?;
     Ok(())
+}
+
+async fn sql_server() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect("postgres://postgres:Louis@localhost/coddl")
+        .await?;
+    sqlx::query(
+        "
+CREATE TABLE userinfo (
+    ID INT PRIMARY KEY NOT NULL,
+    USERNAME VARCHAR(80) NOT NULL,
+    PASSWORD VARCHAR(80) NOT NULL
+)
+    ",
+    )
+    .execute(&pool)
+    .await?;
+    println!("finish create table");
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), tokio::task::JoinError> {
+    match tokio::join!(tokio::spawn(server()), tokio::spawn(sql_server())) {
+        (Ok(_), Ok(_)) => Ok(()),
+        _ => todo!(),
+    }
 }
