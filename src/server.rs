@@ -1,4 +1,4 @@
-use coddl::sign;
+use coddl::pb::sign;
 use dotenv::dotenv;
 use sign::login_server::{Login, LoginServer};
 use sign::sign_up_server::{SignUp, SignUpServer};
