@@ -29,25 +29,29 @@ pub struct SignUpResp {
     pub result: bool,
 }
 /// Generated server implementations.
-pub mod login_server {
+pub mod sign_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    /// Generated trait containing gRPC methods that should be implemented for use with LoginServer.
+    /// Generated trait containing gRPC methods that should be implemented for use with SignServer.
     #[async_trait]
-    pub trait Login: Send + Sync + 'static {
+    pub trait Sign: Send + Sync + 'static {
         async fn verify(
             &self,
             request: tonic::Request<super::LoginReq>,
         ) -> Result<tonic::Response<super::LoginResp>, tonic::Status>;
+        async fn register(
+            &self,
+            request: tonic::Request<super::SignUpReq>,
+        ) -> Result<tonic::Response<super::SignUpResp>, tonic::Status>;
     }
     #[derive(Debug)]
-    pub struct LoginServer<T: Login> {
+    pub struct SignServer<T: Sign> {
         inner: _Inner<T>,
         accept_compression_encodings: EnabledCompressionEncodings,
         send_compression_encodings: EnabledCompressionEncodings,
     }
     struct _Inner<T>(Arc<T>);
-    impl<T: Login> LoginServer<T> {
+    impl<T: Sign> SignServer<T> {
         pub fn new(inner: T) -> Self {
             Self::from_arc(Arc::new(inner))
         }
@@ -81,9 +85,9 @@ pub mod login_server {
             self
         }
     }
-    impl<T, B> tonic::codegen::Service<http::Request<B>> for LoginServer<T>
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for SignServer<T>
     where
-        T: Login,
+        T: Sign,
         B: Body + Send + 'static,
         B::Error: Into<StdError> + Send + 'static,
     {
@@ -99,10 +103,10 @@ pub mod login_server {
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             let inner = self.inner.clone();
             match req.uri().path() {
-                "/sign.Login/verify" => {
+                "/sign.Sign/verify" => {
                     #[allow(non_camel_case_types)]
-                    struct verifySvc<T: Login>(pub Arc<T>);
-                    impl<T: Login> tonic::server::UnaryService<super::LoginReq>
+                    struct verifySvc<T: Sign>(pub Arc<T>);
+                    impl<T: Sign> tonic::server::UnaryService<super::LoginReq>
                     for verifySvc<T> {
                         type Response = super::LoginResp;
                         type Future = BoxFuture<
@@ -135,120 +139,10 @@ pub mod login_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        Ok(
-                            http::Response::builder()
-                                .status(200)
-                                .header("grpc-status", "12")
-                                .header("content-type", "application/grpc")
-                                .body(empty_body())
-                                .unwrap(),
-                        )
-                    })
-                }
-            }
-        }
-    }
-    impl<T: Login> Clone for LoginServer<T> {
-        fn clone(&self) -> Self {
-            let inner = self.inner.clone();
-            Self {
-                inner,
-                accept_compression_encodings: self.accept_compression_encodings,
-                send_compression_encodings: self.send_compression_encodings,
-            }
-        }
-    }
-    impl<T: Login> Clone for _Inner<T> {
-        fn clone(&self) -> Self {
-            Self(self.0.clone())
-        }
-    }
-    impl<T: std::fmt::Debug> std::fmt::Debug for _Inner<T> {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            write!(f, "{:?}", self.0)
-        }
-    }
-    impl<T: Login> tonic::server::NamedService for LoginServer<T> {
-        const NAME: &'static str = "sign.Login";
-    }
-}
-/// Generated server implementations.
-pub mod sign_up_server {
-    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::*;
-    /// Generated trait containing gRPC methods that should be implemented for use with SignUpServer.
-    #[async_trait]
-    pub trait SignUp: Send + Sync + 'static {
-        async fn register(
-            &self,
-            request: tonic::Request<super::SignUpReq>,
-        ) -> Result<tonic::Response<super::SignUpResp>, tonic::Status>;
-    }
-    #[derive(Debug)]
-    pub struct SignUpServer<T: SignUp> {
-        inner: _Inner<T>,
-        accept_compression_encodings: EnabledCompressionEncodings,
-        send_compression_encodings: EnabledCompressionEncodings,
-    }
-    struct _Inner<T>(Arc<T>);
-    impl<T: SignUp> SignUpServer<T> {
-        pub fn new(inner: T) -> Self {
-            Self::from_arc(Arc::new(inner))
-        }
-        pub fn from_arc(inner: Arc<T>) -> Self {
-            let inner = _Inner(inner);
-            Self {
-                inner,
-                accept_compression_encodings: Default::default(),
-                send_compression_encodings: Default::default(),
-            }
-        }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
-        where
-            F: tonic::service::Interceptor,
-        {
-            InterceptedService::new(Self::new(inner), interceptor)
-        }
-        /// Enable decompressing requests with the given encoding.
-        #[must_use]
-        pub fn accept_compressed(mut self, encoding: CompressionEncoding) -> Self {
-            self.accept_compression_encodings.enable(encoding);
-            self
-        }
-        /// Compress responses with the given encoding, if the client supports it.
-        #[must_use]
-        pub fn send_compressed(mut self, encoding: CompressionEncoding) -> Self {
-            self.send_compression_encodings.enable(encoding);
-            self
-        }
-    }
-    impl<T, B> tonic::codegen::Service<http::Request<B>> for SignUpServer<T>
-    where
-        T: SignUp,
-        B: Body + Send + 'static,
-        B::Error: Into<StdError> + Send + 'static,
-    {
-        type Response = http::Response<tonic::body::BoxBody>;
-        type Error = std::convert::Infallible;
-        type Future = BoxFuture<Self::Response, Self::Error>;
-        fn poll_ready(
-            &mut self,
-            _cx: &mut Context<'_>,
-        ) -> Poll<Result<(), Self::Error>> {
-            Poll::Ready(Ok(()))
-        }
-        fn call(&mut self, req: http::Request<B>) -> Self::Future {
-            let inner = self.inner.clone();
-            match req.uri().path() {
-                "/sign.SignUp/register" => {
+                "/sign.Sign/register" => {
                     #[allow(non_camel_case_types)]
-                    struct registerSvc<T: SignUp>(pub Arc<T>);
-                    impl<T: SignUp> tonic::server::UnaryService<super::SignUpReq>
+                    struct registerSvc<T: Sign>(pub Arc<T>);
+                    impl<T: Sign> tonic::server::UnaryService<super::SignUpReq>
                     for registerSvc<T> {
                         type Response = super::SignUpResp;
                         type Future = BoxFuture<
@@ -296,7 +190,7 @@ pub mod sign_up_server {
             }
         }
     }
-    impl<T: SignUp> Clone for SignUpServer<T> {
+    impl<T: Sign> Clone for SignServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self {
@@ -306,7 +200,7 @@ pub mod sign_up_server {
             }
         }
     }
-    impl<T: SignUp> Clone for _Inner<T> {
+    impl<T: Sign> Clone for _Inner<T> {
         fn clone(&self) -> Self {
             Self(self.0.clone())
         }
@@ -316,7 +210,7 @@ pub mod sign_up_server {
             write!(f, "{:?}", self.0)
         }
     }
-    impl<T: SignUp> tonic::server::NamedService for SignUpServer<T> {
-        const NAME: &'static str = "sign.SignUp";
+    impl<T: Sign> tonic::server::NamedService for SignServer<T> {
+        const NAME: &'static str = "sign.Sign";
     }
 }

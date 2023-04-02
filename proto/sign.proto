@@ -2,11 +2,8 @@ syntax = "proto3";
 package sign;
 
 
-service Login {
+service Sign {
     rpc verify(LoginReq) returns (LoginResp) {};
-}
-
-service SignUp {
     rpc register(SignUpReq) returns (SignUpResp) {};
 }
 

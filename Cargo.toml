@@ -1,20 +1,3 @@
-[package]
-name = "coddl"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = ["pb", "pgpool", "server"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[[bin]]
-path = "src/server.rs"
-name = "coddl_server"
-
-[dependencies]
-sqlx = { version = "0.6", features = ["runtime-tokio-rustls", "postgres"] }
-prost = "0.11.0"
-tonic = "0.8"
-tokio = { version = "1", features = ["full"] }
-dotenv = {version = "*"}
-
-
-[build-dependencies]
-tonic-build = "0.8"
