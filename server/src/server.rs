@@ -4,6 +4,8 @@ use pb::{LoginReq, LoginResp, SignUpReq, SignUpResp};
 use pgpool::PgPool;
 use tonic::{transport::Server, Request, Response, Status};
 
+const ADDR: &str = "[::]:8848";
+
 static PGPOOL: OnceCell<PgPool> = OnceCell::new();
 
 struct MySignServer {}
@@ -28,7 +30,7 @@ impl Sign for MySignServer {
 }
 
 async fn server() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "0.0.0.0:8848".parse()?;
+    let addr = ADDR.parse()?;
     let sign_server = MySignServer {};
     println!("Server listening on http://{addr}");
     Server::builder()
